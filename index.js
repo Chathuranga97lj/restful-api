@@ -29,5 +29,16 @@ app.get('/api/customers/:id', (req, res) => {
     }
 })
 
+// get customer filtering age
+app.get('/api/eligible_customers/:age', (req, res) => {
+    const eligiCustomer = customers.find((c) => c.age > parseInt(req.params.age));
+
+    if(eligiCustomer){
+        res.status(200).send(eligiCustomer);
+    } else {
+        res.status(404).send('<There are no eligibal customer in the list>');
+    }
+})
+
 const port = 3000;
 app.listen(port, () => console.log('Listen the port on ' + port + ' .....'));
