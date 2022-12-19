@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 app.use(express.json());
+const Joi = require('joi');
 
 app.get("/", (req, res) => {
     res.send("<h1>Welcome to Rest-API<h1>");
@@ -39,6 +40,36 @@ app.get('/api/eligible_customers/:age', (req, res) => {
         res.status(404).send('<There are no eligibal customer in the list>');
     }
 })
+
+// add customer
+app.post('/api/add_customer', (req, res) => {
+    const {error} = validateCustomer(req.body);
+
+    if(error){
+        return res.status(400).send(error.details[0].message);       
+    }
+
+    const newCustomer = {
+        id: customers.length + 1, // increse customer id
+        name: req.body.name,
+        phone: req.body.phone,
+        age: req.body.age
+    };
+
+    customers.push(newCustomer);
+    res.send(newCustomer);
+})
+
+// data validation
+function validateCustomer(customer) {
+    const schema = Joi.object({
+        name: Joi.string().min(3),
+        phone: Joi.string(),
+        age: Joi.number()
+    });
+
+    return schema.validate(customer);
+}
 
 const port = 3000;
 app.listen(port, () => console.log('Listen the port on ' + port + ' .....'));
