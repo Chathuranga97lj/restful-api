@@ -4,7 +4,7 @@ app.use(express.json());
 const Joi = require('joi');
 
 app.get("/", (req, res) => {
-    res.send("<h1>Welcome to Rest-API<h1>");
+    res.send("<h1>Welcome to Rest-API</h1>");
 })
 
 const customers = [ 
@@ -26,7 +26,7 @@ app.get('/api/customers/:id', (req, res) => {
     if(filterCustomer){
         res.status(200).send(filterCustomer);
     } else {
-        res.status(404).send("<h2> Customer is not in the list <h2>");
+        res.status(404).send("<h2> Customer is not in the list </h2>");
     }
 })
 
@@ -37,7 +37,7 @@ app.get('/api/eligible_customers/:age', (req, res) => {
     if(eligiCustomer){
         res.status(200).send(eligiCustomer);
     } else {
-        res.status(404).send('<There are no eligibal customer in the list>');
+        res.status(404).send('There are no eligibal customer in the list');
     }
 })
 
@@ -70,6 +70,35 @@ function validateCustomer(customer) {
 
     return schema.validate(customer);
 }
+
+// update customer
+app.put('/api/update_customer/:id', (req, res) => {
+    const customer = customers.find((c) => c.id == parseInt(req.params.id));
+
+    if(!customer){
+        res.status(404).send('<h2> Customer is not funded related to id: '+ req.params.id + ' </h2>');
+    }
+
+    const {error} = validateCustomer(req.body);
+    if(error){
+        return res.status(400).send(error.details[0].message);       
+    }
+
+    if(req.body.name){
+        customer.name = req.body.name;
+    }
+
+    if(req.body.phone){
+        customer.phone = req.body.phone;
+    }
+
+    if(req.body.age){
+        customer.age = req.body.age;
+    }
+
+    res.send(customer);
+
+})
 
 const port = 3000;
 app.listen(port, () => console.log('Listen the port on ' + port + ' .....'));
